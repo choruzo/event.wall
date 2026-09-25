@@ -59,7 +59,7 @@ function duration(ms) {
 const initials = (name) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 
 function avatar(p, size = '') {
-  const src = p.avatar || (p.links?.github ? `https://github.com/${encodeURIComponent(p.links.github)}.png?size=176` : '');
+  const src = p.links?.github ? `https://github.com/${encodeURIComponent(p.links.github)}.png?size=176` : '';
   const box = h('div', { class: `avatar ${size}`, 'aria-hidden': 'true' }, initials(p.name));
   if (src) {
     const img = h('img', { src, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' });
@@ -224,7 +224,7 @@ function renderEvent() {
       ev.description && h('p', { class: 'hero__lead' }, ev.description),
       h('div', { class: 'hero__ctas' },
         h('button', { type: 'button', class: 'btn btn--primary', id: 'cta-hero', hidden: true }),
-        ev.url && h('a', { class: 'btn btn--ghost', href: ev.url, target: '_blank', rel: 'noopener' }, 'web_del_evento ↗'),
+        ev.url && h('a', { class: 'btn btn--ghost', href: ev.url, target: '_blank', rel: 'noopener noreferrer' }, 'web_del_evento ↗'),
       ),
       h('p', { class: 'notice', id: 'notice', hidden: true }),
       h('div', { class: 'stats' },
@@ -334,7 +334,7 @@ function openProfile(id) {
     ),
     p.bio && section('sobre mí', h('p', { class: 'profile__text' }, p.bio)),
     links.length ? section('enlaces', h('div', { class: 'links' }, links.map(([label, href]) =>
-      h('a', { href, target: '_blank', rel: 'noopener nofollow ugc' }, `${label} ↗`)))) : null,
+      h('a', { href, target: '_blank', rel: 'noopener noreferrer nofollow ugc' }, `${label} ↗`)))) : null,
     (p.looking_for || p.offering) && section('networking', h('div', { class: 'two-col' },
       p.looking_for && h('div', { class: 'box' }, h('h4', {}, 'busco'), h('p', {}, p.looking_for)),
       p.offering && h('div', { class: 'box' }, h('h4', {}, 'ofrezco'), h('p', {}, p.offering)),
@@ -342,7 +342,7 @@ function openProfile(id) {
     p.projects?.length ? section(`proyectos (${p.projects.length})`, p.projects.map((x) =>
       h('div', { class: 'project' },
         h('div', { class: 'project__head' },
-          h('p', { class: 'project__title' }, x.url ? h('a', { href: x.url, target: '_blank', rel: 'noopener nofollow ugc' }, `${x.title} ↗`) : x.title),
+          h('p', { class: 'project__title' }, x.url ? h('a', { href: x.url, target: '_blank', rel: 'noopener noreferrer nofollow ugc' }, `${x.title} ↗`) : x.title),
           h('span', { class: `badge badge--${x.status}` }, STATUS_LABEL[x.status] || x.status)),
         x.description && h('p', {}, x.description),
         x.stack?.length ? h('div', { class: 'card__tags' }, x.stack.map((s) => h('span', { class: 'chip chip--static' }, s))) : null,
@@ -407,7 +407,7 @@ function openForm(p = null) {
   $('#join-code-field').hidden = Boolean(p) || !state.event.requires_code;
 
   if (p) {
-    for (const k of ['name', 'role', 'company', 'location', 'bio', 'avatar', 'looking_for', 'offering', 'extra']) setField(k, p[k]);
+    for (const k of ['name', 'role', 'company', 'location', 'bio', 'looking_for', 'offering', 'extra']) setField(k, p[k]);
     for (const k of ['github', 'linkedin', 'x', 'web', 'email']) setField(`links.${k}`, p.links?.[k]);
     setField('tags', (p.tags || []).join(', '));
     (p.projects || []).forEach(addProjectRow);
@@ -426,7 +426,7 @@ function readForm() {
   const f = (n) => form.elements.namedItem(n)?.value.trim() || '';
   return {
     name: f('name'), role: f('role'), company: f('company'), location: f('location'),
-    bio: f('bio'), avatar: f('avatar'),
+    bio: f('bio'),
     links: { github: f('links.github'), linkedin: f('links.linkedin'), x: f('links.x'), web: f('links.web'), email: f('links.email') },
     tags: f('tags').split(',').map((s) => s.trim()).filter(Boolean),
     looking_for: f('looking_for'), offering: f('offering'), extra: f('extra'),
