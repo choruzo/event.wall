@@ -1,4 +1,4 @@
-import { json, error, getEvent, windowState, sanitizeProfile, validateProfile, sha256, randomToken, safeEqual } from '../../../../../src/lib.js';
+import { json, error, getEvent, windowState, sanitizeProfile, validateProfile, sha256, randomToken, safeEqual, readJson } from '../../../../../src/lib.js';
 
 const MAX_PARTICIPANTS = 1000;
 
@@ -10,8 +10,9 @@ export async function onRequestPost({ env, params, request }) {
   if (state === 'upcoming') return error(403, 'El muro todavía no está abierto.');
   if (state === 'closed') return error(403, 'El muro está cerrado: ya solo es de lectura.');
 
-  let body;
-  try { body = await request.json(); } catch { return error(400, 'JSON no válido.'); }
+  const parsed = await readJson(request, 32768);
+  if (parsed.response) return parsed.response;
+  const body = parsed.data;
 
   if (ev.join_code_hash) {
     const given = await sha256(String(body.join_code || '').trim());
