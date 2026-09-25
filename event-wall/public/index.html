@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es" data-theme="helmcode">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>event.wall</title>
+  <meta name="description" content="Muro temporal de participantes de eventos tech.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;700&family=Roboto:wght@300;400;500&family=Roboto+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/theme-init.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Saltar al contenido</a>
+
+  <div class="topbar" id="topbar" hidden>
+    <div class="wrap topbar__inner">
+      <span class="status" id="status"><span class="dot"></span><span id="status-text"></span></span>
+      <span class="topbar__meta" id="topbar-meta"></span>
+    </div>
+  </div>
+
+  <header class="nav">
+    <div class="wrap nav__inner">
+      <a class="brand" href="/" aria-label="Inicio">
+        <svg class="brand__mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 21.1 6.75v10.5L12 22.5 2.9 17.25V6.75z"/></svg>
+        <span class="brand__text">event<span class="brand__dot">.</span>wall</span>
+      </a>
+      <div class="nav__actions">
+        <div class="theme-switch" role="group" aria-label="Tema visual">
+          <button type="button" data-set-theme="helmcode">helmcode</button>
+          <button type="button" data-set-theme="nan">nan</button>
+        </div>
+        <button type="button" class="btn btn--primary" id="cta-nav" hidden></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div id="view"><div class="wrap loading">cargando…</div></div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner" id="footer">
+      <span>event.wall · muros temporales para eventos tech</span>
+    </div>
+  </footer>
+
+  <!-- Vista de perfil -->
+  <dialog id="profile-dialog" class="dialog dialog--wide" aria-labelledby="profile-title">
+    <div class="dialog__body" id="profile-body"></div>
+  </dialog>
+
+  <!-- Formulario de perfil -->
+  <dialog id="form-dialog" class="dialog dialog--wide" aria-labelledby="form-title">
+    <form id="profile-form" class="dialog__body form" novalidate>
+      <div class="dialog__head">
+        <div>
+          <p class="eyebrow" id="form-eyebrow">// nuevo perfil</p>
+          <h2 id="form-title">Crea tu perfil</h2>
+        </div>
+        <button type="button" class="icon-btn" data-close aria-label="Cerrar">✕</button>
+      </div>
+
+      <fieldset>
+        <legend>// sobre ti</legend>
+        <div class="grid-2">
+          <label>Nombre *<input name="name" required maxlength="80" autocomplete="name"></label>
+          <label>Rol<input name="role" maxlength="80" placeholder="SRE, ML engineer, founder…"></label>
+          <label>Empresa / comunidad<input name="company" maxlength="80" autocomplete="organization"></label>
+          <label>Ubicación<input name="location" maxlength="60" placeholder="Madrid"></label>
+        </div>
+        <label>Bio<textarea name="bio" maxlength="600" rows="3" placeholder="Qué haces, qué te interesa, por qué has venido."></textarea></label>
+        <label>Avatar (URL)<input name="avatar" maxlength="300" placeholder="https://… · si lo dejas vacío usamos tu avatar de GitHub"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>// enlaces</legend>
+        <div class="grid-2">
+          <label>GitHub (usuario)<input name="links.github" maxlength="60" placeholder="choruzo"></label>
+          <label>LinkedIn (URL)<input name="links.linkedin" maxlength="300" placeholder="linkedin.com/in/…"></label>
+          <label>X / Twitter (usuario)<input name="links.x" maxlength="60"></label>
+          <label>Web<input name="links.web" maxlength="300" placeholder="https://…"></label>
+        </div>
+        <label><span>Email público <span class="hint">(visible para todos; opcional)</span></span><input name="links.email" type="email" maxlength="254"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>// networking</legend>
+        <label><span>Temas / tags <span class="hint">(separados por comas)</span></span><input name="tags" maxlength="400" placeholder="llm, kubernetes, vmware, rag"></label>
+        <div class="grid-2">
+          <label>Busco<textarea name="looking_for" maxlength="300" rows="2" placeholder="Cofounder, feedback, trabajo, GPUs…"></textarea></label>
+          <label>Ofrezco<textarea name="offering" maxlength="300" rows="2" placeholder="Mentoría, ayuda con infra, beta testers…"></textarea></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>// proyectos</legend>
+        <div id="projects-list" class="projects-edit"></div>
+        <button type="button" class="btn btn--ghost btn--sm" id="add-project">+ añadir proyecto</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>// lo que quieras</legend>
+        <label><span>Extra <span class="hint">(charlas, papers, setup, lo que te parezca)</span></span><textarea name="extra" maxlength="1500" rows="4"></textarea></label>
+      </fieldset>
+
+      <fieldset id="join-code-field" hidden>
+        <legend>// acceso</legend>
+        <label>Código del evento *<input name="join_code" maxlength="80" autocomplete="off"></label>
+      </fieldset>
+
+      <p class="form__error" id="form-error" role="alert" hidden></p>
+
+      <div class="dialog__foot">
+        <button type="button" class="btn btn--danger btn--sm" id="delete-profile" hidden>borrar_perfil</button>
+        <span class="spacer"></span>
+        <button type="button" class="btn btn--ghost" data-close>cancelar</button>
+        <button type="submit" class="btn btn--primary" id="form-submit">publicar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Enlace de edición tras crear -->
+  <dialog id="token-dialog" class="dialog" aria-labelledby="token-title">
+    <div class="dialog__body">
+      <p class="eyebrow">// perfil publicado</p>
+      <h2 id="token-title">Guarda tu enlace de edición</h2>
+      <p class="muted">No hay cuentas ni contraseñas: este enlace es la única forma de editar o borrar tu perfil desde otro navegador. En este navegador ya queda recordado.</p>
+      <div class="copy-row">
+        <input id="edit-link" readonly>
+        <button type="button" class="btn btn--primary btn--sm" id="copy-link">copiar</button>
+      </div>
+      <div class="dialog__foot">
+        <span class="spacer"></span>
+        <button type="button" class="btn btn--ghost" data-close>hecho</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <template id="project-tpl">
+    <div class="project-edit">
+      <div class="grid-2">
+        <label>Título<input data-f="title" maxlength="80"></label>
+        <label>URL<input data-f="url" maxlength="300" placeholder="github.com/…"></label>
+        <label>Estado
+          <select data-f="status">
+            <option value="idea">idea</option>
+            <option value="wip" selected>en curso</option>
+            <option value="live">en producción</option>
+            <option value="archived">archivado</option>
+          </select>
+        </label>
+        <label><span>Stack <span class="hint">(comas)</span></span><input data-f="stack" maxlength="200" placeholder="python, litellm, vllm"></label>
+      </div>
+      <label>Descripción<textarea data-f="description" maxlength="600" rows="2"></textarea></label>
+      <button type="button" class="link-btn" data-remove-project>quitar proyecto</button>
+    </div>
+  </template>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>
