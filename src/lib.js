@@ -152,7 +152,7 @@ export function sanitizeProfile(input = {}) {
     company: str(input.company, 80),
     location: str(input.location, 60),
     bio: str(input.bio, 600),
-    avatar: safeHttpUrl(input.avatar),
+    avatar: '',
     links: {
       github: handle(input.links?.github),
       linkedin: safeHttpUrl(input.links?.linkedin),
