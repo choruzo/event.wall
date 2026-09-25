@@ -65,7 +65,6 @@ export function publicEvent(ev) {
     event_date: ev.event_date,
     opens_at: ev.opens_at,
     closes_at: ev.closes_at,
-    default_theme: ev.default_theme,
     requires_code: Boolean(ev.join_code_hash),
     state: windowState(ev),
     now: new Date().toISOString(),
@@ -105,7 +104,11 @@ export async function readJson(request, maxBytes = 65536) {
   }
 
   try {
-    return { data: JSON.parse(text) };
+    const data = JSON.parse(text);
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return { response: error(400, 'El cuerpo JSON debe ser un objeto.') };
+    }
+    return { data };
   } catch {
     return { response: error(400, 'JSON no válido.') };
   }
