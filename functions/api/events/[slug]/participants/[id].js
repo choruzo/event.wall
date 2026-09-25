@@ -1,4 +1,4 @@
-import { json, error, getEvent, windowState, sanitizeProfile, validateProfile, sha256, safeEqual, bearer, isAdmin } from '../../../../../src/lib.js';
+import { json, error, getEvent, windowState, sanitizeProfile, validateProfile, sha256, safeEqual, bearer, isAdmin, readJson } from '../../../../../src/lib.js';
 
 async function load(env, params) {
   const ev = await getEvent(env, params.slug);
@@ -26,8 +26,9 @@ export async function onRequestPut({ env, params, request }) {
   if (!(await ownerOk(request, row))) return error(401, 'Token de edición no válido.');
   if (windowState(ev) !== 'open') return error(403, 'El muro no está abierto: no se pueden editar perfiles.');
 
-  let body;
-  try { body = await request.json(); } catch { return error(400, 'JSON no válido.'); }
+  const parsed = await readJson(request, 32768);
+  if (parsed.response) return parsed.response;
+  const body = parsed.data;
   const profile = sanitizeProfile(body.profile);
   const invalid = validateProfile(profile);
   if (invalid) return error(400, invalid);
