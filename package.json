@@ -10,7 +10,8 @@
     "db:seed:cafe:local": "wrangler d1 execute event-wall --local --file=examples/cafe-helmcode.sql",
     "db:seed:cafe:remote": "wrangler d1 execute event-wall --remote --file=examples/cafe-helmcode.sql",
     "dev": "wrangler pages dev",
-    "deploy": "wrangler pages deploy"
+    "deploy": "wrangler pages deploy",
+    "check": "node --check public/app.js && node --check src/lib.js && node --check functions/api/admin/events/index.js && node --check functions/api/admin/events/[slug].js && node --check functions/api/events/index.js && node --check functions/api/events/[slug]/index.js && node --check functions/api/events/[slug]/participants/index.js && node --check functions/api/events/[slug]/participants/[id].js"
   },
   "devDependencies": {
     "wrangler": "^4"
