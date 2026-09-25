@@ -5,6 +5,10 @@
   "scripts": {
     "db:init:local": "wrangler d1 execute event-wall --local --file=schema.sql",
     "db:init:remote": "wrangler d1 execute event-wall --remote --file=schema.sql",
+    "db:migrate:local": "wrangler d1 migrations apply event-wall --local",
+    "db:migrate:remote": "wrangler d1 migrations apply event-wall --remote",
+    "db:seed:cafe:local": "wrangler d1 execute event-wall --local --file=examples/cafe-helmcode.sql",
+    "db:seed:cafe:remote": "wrangler d1 execute event-wall --remote --file=examples/cafe-helmcode.sql",
     "dev": "wrangler pages dev",
     "deploy": "wrangler pages deploy"
   },
