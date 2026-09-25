@@ -19,7 +19,7 @@
   --accent: #4934E1;
   --accent-text: #818CF8;
   --accent-dim: rgba(73, 52, 225, .10);
-  --accent-border: rgba(129, 140, 248, .35);
+  --accent-border: rgba(255, 255, 255, .16);
   --ok: #27c93f;
   --warn: #ffbd2e;
   --danger: rgba(220, 80, 80, .9);
@@ -249,7 +249,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .box { border: var(--hairline) solid var(--line); padding: 14px 16px; background: var(--surface-2); }
 .box h4 { margin: 0 0 6px; font-family: var(--font-mono); font-size: 10px; letter-spacing: var(--label-tracking); text-transform: uppercase; color: var(--text-3); font-weight: 500; }
 .box p { margin: 0; color: var(--text-2); font-size: 14px; }
-.project { border: var(--hairline) solid var(--line); border-left: 2px solid var(--accent); padding: 14px 16px; background: var(--surface-2); }
+.project { border: var(--hairline) solid var(--line); border-left: var(--hairline) solid var(--line-hover); padding: 14px 16px; background: var(--surface-2); }
 .project + .project { margin-top: 10px; }
 .project__head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
 .project__title { font-weight: 500; margin: 0; overflow-wrap: anywhere; }
