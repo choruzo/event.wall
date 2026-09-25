@@ -44,15 +44,6 @@ function toast(msg) {
   toast._t = setTimeout(() => (t.hidden = true), 3200);
 }
 
-// ---------- Tema ----------
-function applyTheme(theme, persist = true) {
-  document.documentElement.dataset.theme = theme;
-  $$('[data-set-theme]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.setTheme === theme)));
-  if (persist) store.set('ew:theme', theme);
-}
-$$('[data-set-theme]').forEach((b) => b.addEventListener('click', () => applyTheme(b.dataset.setTheme)));
-applyTheme(document.documentElement.dataset.theme, false);
-
 // ---------- Formato ----------
 const fmtDate = (iso, opts) => new Intl.DateTimeFormat('es-ES', opts).format(new Date(iso));
 const fmtDay = (iso) => fmtDate(iso, { day: 'numeric', month: 'short', year: 'numeric' });
@@ -153,8 +144,6 @@ async function loadEvent(slug) {
     state.skew = Date.parse(data.event.now) - Math.round((t0 + Date.now()) / 2);
     state.event = data.event;
     state.participants = data.participants;
-    // tema por defecto del evento si el usuario no ha elegido uno
-    if (!store.get('ew:theme')) applyTheme(data.event.default_theme, false);
     document.title = `${data.event.name} · event.wall`;
     renderEvent();
     tick();
