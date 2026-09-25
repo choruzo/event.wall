@@ -12,7 +12,10 @@ export async function onRequestPost({ env, request }) {
 
   const slug = String(b.slug || '').toLowerCase().trim();
   if (!/^[a-z0-9][a-z0-9-]{1,62}$/.test(slug)) return error(400, 'slug no válido (a-z, 0-9, guiones).');
-  if (!b.name || !b.event_date || isNaN(Date.parse(b.event_date))) return error(400, 'name y event_date son obligatorios.');
+  const eventName = typeof b.name === 'string' ? b.name.trim() : '';
+  if (eventName.length < 2 || !b.event_date || isNaN(Date.parse(b.event_date))) {
+    return error(400, 'name y event_date son obligatorios.');
+  }
 
   const eventTs = Date.parse(b.event_date);
   const opens = b.opens_at ? new Date(Date.parse(b.opens_at)) : new Date(eventTs - 3 * DAY);
@@ -45,7 +48,7 @@ export async function onRequestPost({ env, request }) {
        join_code_hash=excluded.join_code_hash`
   ).bind(
     slug,
-    String(b.name).trim().slice(0, 120),
+    eventName.slice(0, 120),
     clean(b.tagline, 180),
     clean(b.description, 1200),
     clean(b.location, 120),
