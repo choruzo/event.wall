@@ -15,7 +15,7 @@ Cada evento vive en `/e/<slug>` y dispone de una ventana temporal configurable p
 - Ventanas de apertura y cierre configurables.
 - Modo solo lectura al cerrar el muro.
 - Exportación JSON y moderación/admin.
-- Temas independientes por evento: `helmcode` y `nan`.
+- Tema visual único alineado con el brand kit público de Helmcode.
 - Frontend sin framework ni paso de build.
 
 ## Stack
@@ -86,7 +86,6 @@ curl -X POST https://eventos.tudominio.com/api/admin/events \
     "organizer": "Helmcode",
     "url": "https://helmcode.com/es",
     "event_date": "2026-10-20T18:00:00+02:00",
-    "default_theme": "helmcode",
     "join_code": "cafe2026"
   }'
 ```
@@ -116,11 +115,11 @@ Sin `opens_at`/`closes_at`, el muro abre tres días antes y cierra siete días d
 - El email es opcional y la interfaz avisa de su visibilidad.
 - Para tráfico abierto, usa `join_code` y/o rate limiting de Cloudflare.
 
-## Temas
+## Diseño
 
-Cada evento define `default_theme`. Los tokens visuales están en `public/styles.css`.
+La interfaz usa un único sistema visual inspirado en el brand kit público de Helmcode: fondo #0a0a0a, superficies #111111/#161616, Roboto + Roboto Mono, geometría sin bordes redondeados y el índigo #4934E1 como señal visual.
 
-El core de event.wall es independiente del branding de cada comunidad.
+El core de event.wall sigue siendo independiente del contenido de cada evento.
 
 ## Helmcode
 

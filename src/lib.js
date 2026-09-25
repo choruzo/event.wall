@@ -6,6 +6,10 @@ export const json = (data, status = 200, extra = {}) =>
     headers: {
       'content-type': 'application/json; charset=utf-8',
       'cache-control': 'no-store',
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'DENY',
+      'referrer-policy': 'strict-origin-when-cross-origin',
+      'cross-origin-resource-policy': 'same-origin',
       ...extra,
     },
   });
@@ -61,7 +65,6 @@ export function publicEvent(ev) {
     event_date: ev.event_date,
     opens_at: ev.opens_at,
     closes_at: ev.closes_at,
-    default_theme: ev.default_theme,
     requires_code: Boolean(ev.join_code_hash),
     state: windowState(ev),
     now: new Date().toISOString(),
@@ -76,14 +79,38 @@ export async function getEvent(env, slug) {
 
 const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
-function url(v) {
-  const s = str(v, 300);
+export function safeHttpUrl(v, max = 300) {
+  const s = str(v, max);
   if (!s) return '';
   try {
     const u = new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`);
-    return u.protocol === 'http:' || u.protocol === 'https:' ? u.toString() : '';
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return '';
+    if (u.username || u.password) return '';
+    return u.toString();
   } catch {
     return '';
+  }
+}
+
+export async function readJson(request, maxBytes = 65536) {
+  const declared = Number(request.headers.get('content-length') || 0);
+  if (Number.isFinite(declared) && declared > maxBytes) {
+    return { response: error(413, 'Petición demasiado grande.') };
+  }
+
+  const text = await request.text();
+  if (new TextEncoder().encode(text).byteLength > maxBytes) {
+    return { response: error(413, 'Petición demasiado grande.') };
+  }
+
+  try {
+    const data = JSON.parse(text);
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return { response: error(400, 'El cuerpo JSON debe ser un objeto.') };
+    }
+    return { data };
+  } catch {
+    return { response: error(400, 'JSON no válido.') };
   }
 }
 
@@ -113,7 +140,7 @@ export function sanitizeProfile(input = {}) {
     .map((p) => ({
       title: str(p?.title, 80),
       description: str(p?.description, 600),
-      url: url(p?.url),
+      url: safeHttpUrl(p?.url),
       stack: tags(p?.stack, 8),
       status: ['idea', 'wip', 'live', 'archived'].includes(p?.status) ? p.status : 'wip',
     }))
@@ -125,12 +152,12 @@ export function sanitizeProfile(input = {}) {
     company: str(input.company, 80),
     location: str(input.location, 60),
     bio: str(input.bio, 600),
-    avatar: url(input.avatar),
+    avatar: '',
     links: {
       github: handle(input.links?.github),
-      linkedin: url(input.links?.linkedin),
+      linkedin: safeHttpUrl(input.links?.linkedin),
       x: handle(input.links?.x),
-      web: url(input.links?.web),
+      web: safeHttpUrl(input.links?.web),
       email: /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(str(input.links?.email, 254)) ? str(input.links.email, 254) : '',
     },
     tags: tags(input.tags),

@@ -16,13 +16,11 @@ Ejemplos:
 
 ## Branding
 
-El evento puede usar:
+La interfaz usa un único sistema visual alineado con el brand kit público de Helmcode.
 
-```json
-{ "default_theme": "helmcode" }
-```
+Los tokens están en `public/styles.css`: fondo cálido negro, superficies oscuras, Roboto/Roboto Mono, esquinas rectas, separadores finos y el índigo de marca como señal visual.
 
-Los tokens visuales del tema están en `public/styles.css` bajo `[data-theme="helmcode"]`.
+El logotipo se referencia desde el recurso SVG oficial de Helmcode; no se recrea ni recolorea.
 
 ## Infraestructura mínima
 
